@@ -23,7 +23,7 @@ const app = express();
 
 const users = require('./routes/users');
 
-const port = 3000;
+const port = process.env.PORT || 8080;
 
 // CORS Middleware
 app.use(cors());
@@ -42,8 +42,13 @@ require('./config/passport')(passport);
 
 app.use('/users', users);
 
+// Index Route
 app.get('/', (req, res) => {
     res.send("Invalid Endpoint");
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 app.listen(port, () => {
