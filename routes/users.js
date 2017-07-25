@@ -4,9 +4,24 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const config = require('../config/database');
 const User = require('../models/user');
+const TaskList = require('../models/taskList');
+
 
 //Register
-router.post('/register', (req, res, next) => {
+router.post('/register', register);
+
+//Authenticate
+router.post('/authenticate', authenticate);
+
+//Profile
+router.get('/profile', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+    res.json({ user: req.user })
+});
+
+module.exports = router;
+
+// Helper Functions
+function register(req, res, next) {
     let newUser = new User({
         name: req.body.name,
         email: req.body.email,
@@ -21,10 +36,9 @@ router.post('/register', (req, res, next) => {
             res.json({ success: true, msg: 'User registered' });
         }
     });
-});
+}
 
-//Authenticate
-router.post('/authenticate', (req, res, next) => {
+function authenticate(req, res, next) {
     const username = req.body.username;
     const password = req.body.password;
 
@@ -57,11 +71,4 @@ router.post('/authenticate', (req, res, next) => {
             }
         });
     });
-});
-
-//Profile
-router.get('/profile', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-    res.json({ user: req.user })
-});
-
-module.exports = router;
+}
